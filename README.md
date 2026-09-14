@@ -21,19 +21,19 @@ The application combines rule-based financial calculations with Google Gemini to
 ## Screenshots
 
 ### Home Page
-![Home Page](Screenshot2026-09-14153720.png)
+![Home Page](Screenshot 2026-09-14 153720.png)
 
 ### Financial Information Form
-![Financial Form](Screenshot2026-09-14153744.png)
+![Financial Form](Screenshot 2026-09-14 153744.png)
 
 ### Financial Health Dashboard
-![Dashboard](Screenshot2026-09-14153906.png)
+![Dashboard](Screenshot 2026-09-14 153906.png)
 
 ### CIBIL Score Trend
-![CIBIL Score Trend](Screenshot2026-09-14154005.png)
+![CIBIL Score Trend](Screenshot 2026-09-14 154005.png)
 
 ### AI Financial Insights
-![AI Insights](Screenshot2026-09-14154037.png)
+![AI Insights](Screenshot 2026-09-14 154037.png)
 
 ## Financial Health Logic
 
