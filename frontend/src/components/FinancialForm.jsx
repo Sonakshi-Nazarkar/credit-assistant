@@ -24,6 +24,13 @@ function FinancialForm() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
+  // Backend API URL
+  // Local development -> http://127.0.0.1:8000
+  // Production -> VITE_API_URL environment variable
+  const API_URL =
+    import.meta.env.VITE_API_URL ||
+    "http://127.0.0.1:8000";
+
   const handleChange = (e) => {
     setFormData({
       ...formData,
@@ -137,7 +144,7 @@ function FinancialForm() {
       };
 
       const response = await fetch(
-        "http://127.0.0.1:8000/analyze",
+        `${API_URL}/analyze`,
         {
           method: "POST",
           headers: {
@@ -339,7 +346,6 @@ function FinancialForm() {
       <div style={styles.container}>
 
         {/* HEADER */}
-
         <div style={styles.header}>
           <h1 style={styles.title}>
             Credit Assistant
@@ -351,7 +357,6 @@ function FinancialForm() {
         </div>
 
         {/* FORM */}
-
         <form
           onSubmit={handleSubmit}
           style={styles.card}
@@ -362,6 +367,7 @@ function FinancialForm() {
 
           <div style={styles.grid}>
 
+            {/* Monthly Income */}
             <div style={styles.field}>
               <label style={styles.label}>
                 Monthly Income
@@ -379,6 +385,7 @@ function FinancialForm() {
               />
             </div>
 
+            {/* Monthly Debt */}
             <div style={styles.field}>
               <label style={styles.label}>
                 Monthly Debt / EMI
@@ -396,6 +403,7 @@ function FinancialForm() {
               />
             </div>
 
+            {/* Credit Limit */}
             <div style={styles.field}>
               <label style={styles.label}>
                 Total Credit Limit
@@ -413,6 +421,7 @@ function FinancialForm() {
               />
             </div>
 
+            {/* Credit Used */}
             <div style={styles.field}>
               <label style={styles.label}>
                 Current Credit Used
@@ -430,6 +439,7 @@ function FinancialForm() {
               />
             </div>
 
+            {/* CIBIL Score */}
             <div style={styles.field}>
               <label style={styles.label}>
                 Current CIBIL Score
@@ -448,6 +458,7 @@ function FinancialForm() {
               />
             </div>
 
+            {/* Credit History */}
             <div style={styles.field}>
               <label style={styles.label}>
                 Credit Score History
@@ -471,7 +482,6 @@ function FinancialForm() {
           </div>
 
           {/* ERROR MESSAGE */}
-
           {error && (
             <div style={styles.errorBox}>
               <strong>
@@ -485,7 +495,6 @@ function FinancialForm() {
           )}
 
           {/* BUTTON */}
-
           <button
             type="submit"
             style={{
@@ -501,16 +510,13 @@ function FinancialForm() {
               ? "Analyzing Your Financial Health..."
               : "Analyze My Financial Health"}
           </button>
-
         </form>
 
         {/* RESULTS */}
-
         {analysisResult && (
           <div style={styles.results}>
 
             {/* FINANCIAL HEALTH */}
-
             <div style={styles.healthCard}>
               <p style={styles.resultLabel}>
                 Overall Financial Health
@@ -527,7 +533,6 @@ function FinancialForm() {
             </div>
 
             {/* METRICS */}
-
             <div style={styles.metricsGrid}>
 
               <div style={styles.metricCard}>
@@ -563,7 +568,6 @@ function FinancialForm() {
             </div>
 
             {/* CIBIL CHART */}
-
             <div style={styles.chartCard}>
               <h2 style={styles.chartTitle}>
                 CIBIL Score Trend
@@ -612,17 +616,15 @@ function FinancialForm() {
                         r: 7,
                       }}
                     />
-
                   </LineChart>
                 </ResponsiveContainer>
               </div>
             </div>
 
             {/* AI INSIGHTS */}
-
             <div style={styles.aiCard}>
-              <div style={styles.aiHeader}>
 
+              <div style={styles.aiHeader}>
                 <span style={styles.aiIcon}>
                   AI
                 </span>
@@ -636,7 +638,6 @@ function FinancialForm() {
                     Personalized explanation powered by Gemini
                   </p>
                 </div>
-
               </div>
 
               <div style={styles.aiContent}>
@@ -644,14 +645,15 @@ function FinancialForm() {
                   analysisResult.ai_explanation
                 )}
               </div>
+
             </div>
 
             {/* DISCLAIMER */}
-
             <div style={styles.disclaimer}>
               <strong>
                 Disclaimer:
               </strong>{" "}
+
               This tool provides educational financial
               guidance for informational purposes only.
               It does not guarantee any specific CIBIL
@@ -726,7 +728,6 @@ const styles = {
     gap: "8px",
   },
 
-  // FORM LABEL STYLE
   label: {
     color: "#172033",
     fontSize: "14px",
