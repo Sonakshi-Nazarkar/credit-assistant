@@ -18,6 +18,23 @@ The application combines rule-based financial calculations with Google Gemini to
 - Responsible AI disclaimer
 - API key protected on the backend
 
+## Screenshots
+
+### Home Page
+![Home Page](Screenshot2026-09-14153720.png)
+
+### Financial Information Form
+![Financial Form](Screenshot2026-09-14153744.png)
+
+### Financial Health Dashboard
+![Dashboard](Screenshot2026-09-14153906.png)
+
+### CIBIL Score Trend
+![CIBIL Score Trend](Screenshot2026-09-14154005.png)
+
+### AI Financial Insights
+![AI Insights](Screenshot2026-09-14154037.png)
+
 ## Financial Health Logic
 
 The application evaluates financial health using three major indicators:
