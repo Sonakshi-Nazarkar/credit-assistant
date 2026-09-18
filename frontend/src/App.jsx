@@ -36,6 +36,18 @@ function App() {
   const [loginLoading, setLoginLoading] = useState(false);
 
   // --------------------------------------------------
+  // REGISTER STATES
+  // --------------------------------------------------
+  const [showRegister, setShowRegister] = useState(false);
+  const [registerName, setRegisterName] = useState("");
+  const [registerEmail, setRegisterEmail] = useState("");
+  const [registerPassword, setRegisterPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [registerError, setRegisterError] = useState("");
+  const [registerSuccess, setRegisterSuccess] = useState("");
+  const [registerLoading, setRegisterLoading] = useState(false);
+
+  // --------------------------------------------------
   // BACKEND URL
   // --------------------------------------------------
   const API_BASE_URL = import.meta.env.DEV
@@ -59,6 +71,7 @@ function App() {
       setCurrentView("form");
     } else {
       setShowLogin(true);
+      setShowRegister(false);
       setLoginError("");
     }
   };
@@ -73,6 +86,7 @@ function App() {
       setCurrentView("dashboard");
     } else {
       setShowLogin(true);
+      setShowRegister(false);
       setLoginError("");
     }
   };
@@ -86,28 +100,23 @@ function App() {
     setLoginError("");
 
     if (!email.trim() || !password) {
-      setLoginError(
-        "Please enter both email and password."
-      );
+      setLoginError("Please enter both email and password.");
       return;
     }
 
     try {
       setLoginLoading(true);
 
-      const response = await fetch(
-        `${API_BASE_URL}/login`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            email: email.trim(),
-            password: password,
-          }),
-        }
-      );
+      const response = await fetch(`${API_BASE_URL}/login`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: email.trim(),
+          password: password,
+        }),
+      });
 
       const data = await response.json();
 
@@ -170,6 +179,130 @@ function App() {
   };
 
   // --------------------------------------------------
+  // REGISTER
+  // --------------------------------------------------
+  const handleRegister = async (event) => {
+    event.preventDefault();
+
+    setRegisterError("");
+    setRegisterSuccess("");
+
+    // --------------------------------------------------
+    // BASIC VALIDATION
+    // --------------------------------------------------
+    if (
+      !registerName.trim() ||
+      !registerEmail.trim() ||
+      !registerPassword ||
+      !confirmPassword
+    ) {
+      setRegisterError(
+        "Please fill in all the fields."
+      );
+      return;
+    }
+
+    if (registerPassword.length < 6) {
+      setRegisterError(
+        "Password must be at least 6 characters long."
+      );
+      return;
+    }
+
+    if (registerPassword !== confirmPassword) {
+      setRegisterError(
+        "Passwords do not match."
+      );
+      return;
+    }
+
+    try {
+      setRegisterLoading(true);
+
+      const response = await fetch(
+        `${API_BASE_URL}/register`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            name: registerName.trim(),
+            email: registerEmail.trim(),
+            password: registerPassword,
+          }),
+        }
+      );
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(
+          data.detail ||
+          "Registration failed. Please try again."
+        );
+      }
+
+      // --------------------------------------------------
+      // REGISTRATION SUCCESS
+      // --------------------------------------------------
+      setRegisterSuccess(
+        "Account created successfully! You can now login."
+      );
+
+      setRegisterName("");
+      setRegisterEmail("");
+      setRegisterPassword("");
+      setConfirmPassword("");
+
+      // --------------------------------------------------
+      // MOVE TO LOGIN AFTER SHORT DELAY
+      // --------------------------------------------------
+      setTimeout(() => {
+        setShowRegister(false);
+        setShowLogin(true);
+        setRegisterSuccess("");
+        setEmail(data.email || "");
+      }, 1200);
+    } catch (error) {
+      console.error("Registration error:", error);
+
+      setRegisterError(
+        error.message ||
+        "Something went wrong during registration."
+      );
+    } finally {
+      setRegisterLoading(false);
+    }
+  };
+
+  // --------------------------------------------------
+  // OPEN REGISTER
+  // --------------------------------------------------
+  const handleOpenRegister = () => {
+    setShowRegister(true);
+    setShowLogin(false);
+
+    setLoginError("");
+
+    setRegisterError("");
+    setRegisterSuccess("");
+  };
+
+  // --------------------------------------------------
+  // OPEN LOGIN
+  // --------------------------------------------------
+  const handleOpenLogin = () => {
+    setShowLogin(true);
+    setShowRegister(false);
+
+    setLoginError("");
+
+    setRegisterError("");
+    setRegisterSuccess("");
+  };
+
+  // --------------------------------------------------
   // LOGOUT
   // --------------------------------------------------
   const handleLogout = () => {
@@ -179,11 +312,21 @@ function App() {
 
     setUser(null);
     setCurrentView("home");
+
     setShowLogin(false);
+    setShowRegister(false);
 
     setEmail("");
     setPassword("");
+
+    setRegisterName("");
+    setRegisterEmail("");
+    setRegisterPassword("");
+    setConfirmPassword("");
+
     setLoginError("");
+    setRegisterError("");
+    setRegisterSuccess("");
   };
 
   // --------------------------------------------------
@@ -205,6 +348,7 @@ function App() {
           onClick={() => {
             setCurrentView("home");
             setShowLogin(false);
+            setShowRegister(false);
           }}
           style={{
             cursor: "pointer",
@@ -425,6 +569,34 @@ function App() {
                   : "Login"}
               </button>
 
+              {/* REGISTER LINK */}
+
+              <div
+                style={{
+                  marginTop: "4px",
+                  textAlign: "center",
+                  color: "#ffffff",
+                  fontSize: "14px",
+                }}
+              >
+                Don't have an account?{" "}
+                <button
+                  type="button"
+                  onClick={handleOpenRegister}
+                  style={{
+                    background: "none",
+                    border: "none",
+                    padding: 0,
+                    color: "#00c98d",
+                    fontWeight: "700",
+                    cursor: "pointer",
+                    fontSize: "14px",
+                  }}
+                >
+                  Create Account
+                </button>
+              </div>
+
               {/* BACK */}
 
               <button
@@ -439,6 +611,279 @@ function App() {
               </button>
             </form>
           </section>
+
+        ) : showRegister ? (
+
+          /* ==================================================
+             REGISTER PAGE
+          ================================================== */
+
+          <section
+            className="hero-section"
+            style={{
+              maxWidth: "500px",
+              margin: "40px auto",
+            }}
+          >
+            <div className="hero-subtitle-badge">
+              Create Account
+            </div>
+
+            <h1 className="hero-title">
+              Get Started
+            </h1>
+
+            <h2 className="hero-subtitle">
+              Create Your Credit Assistant Account
+            </h2>
+
+            <p className="hero-description">
+              Create an account to save your financial
+              information and access your personalized dashboard.
+            </p>
+
+            {/* REGISTER FORM */}
+
+            <form
+              onSubmit={handleRegister}
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                gap: "18px",
+                marginTop: "30px",
+              }}
+            >
+
+              {/* NAME */}
+
+              <div
+                style={{
+                  textAlign: "left",
+                }}
+              >
+                <label
+                  style={{
+                    display: "block",
+                    marginBottom: "8px",
+                    fontWeight: "600",
+                  }}
+                >
+                  Full Name
+                </label>
+
+                <input
+                  type="text"
+                  placeholder="Enter your name"
+                  value={registerName}
+                  onChange={(event) =>
+                    setRegisterName(event.target.value)
+                  }
+                  style={{
+                    width: "100%",
+                    padding: "12px",
+                    borderRadius: "8px",
+                    border: "1px solid #ccc",
+                    fontSize: "16px",
+                    boxSizing: "border-box",
+                  }}
+                />
+              </div>
+
+              {/* EMAIL */}
+
+              <div
+                style={{
+                  textAlign: "left",
+                }}
+              >
+                <label
+                  style={{
+                    display: "block",
+                    marginBottom: "8px",
+                    fontWeight: "600",
+                  }}
+                >
+                  Email
+                </label>
+
+                <input
+                  type="email"
+                  placeholder="Enter your email"
+                  value={registerEmail}
+                  onChange={(event) =>
+                    setRegisterEmail(event.target.value)
+                  }
+                  style={{
+                    width: "100%",
+                    padding: "12px",
+                    borderRadius: "8px",
+                    border: "1px solid #ccc",
+                    fontSize: "16px",
+                    boxSizing: "border-box",
+                  }}
+                />
+              </div>
+
+              {/* PASSWORD */}
+
+              <div
+                style={{
+                  textAlign: "left",
+                }}
+              >
+                <label
+                  style={{
+                    display: "block",
+                    marginBottom: "8px",
+                    fontWeight: "600",
+                  }}
+                >
+                  Password
+                </label>
+
+                <input
+                  type="password"
+                  placeholder="Create a password"
+                  value={registerPassword}
+                  onChange={(event) =>
+                    setRegisterPassword(event.target.value)
+                  }
+                  style={{
+                    width: "100%",
+                    padding: "12px",
+                    borderRadius: "8px",
+                    border: "1px solid #ccc",
+                    fontSize: "16px",
+                    boxSizing: "border-box",
+                  }}
+                />
+              </div>
+
+              {/* CONFIRM PASSWORD */}
+
+              <div
+                style={{
+                  textAlign: "left",
+                }}
+              >
+                <label
+                  style={{
+                    display: "block",
+                    marginBottom: "8px",
+                    fontWeight: "600",
+                  }}
+                >
+                  Confirm Password
+                </label>
+
+                <input
+                  type="password"
+                  placeholder="Confirm your password"
+                  value={confirmPassword}
+                  onChange={(event) =>
+                    setConfirmPassword(event.target.value)
+                  }
+                  style={{
+                    width: "100%",
+                    padding: "12px",
+                    borderRadius: "8px",
+                    border: "1px solid #ccc",
+                    fontSize: "16px",
+                    boxSizing: "border-box",
+                  }}
+                />
+              </div>
+
+              {/* ERROR */}
+
+              {registerError && (
+                <div
+                  style={{
+                    padding: "12px",
+                    borderRadius: "8px",
+                    backgroundColor: "#ffe5e5",
+                    color: "#c62828",
+                    fontSize: "14px",
+                    textAlign: "left",
+                  }}
+                >
+                  {registerError}
+                </div>
+              )}
+
+              {/* SUCCESS */}
+
+              {registerSuccess && (
+                <div
+                  style={{
+                    padding: "12px",
+                    borderRadius: "8px",
+                    backgroundColor: "#e6fff5",
+                    color: "#087f5b",
+                    fontSize: "14px",
+                    textAlign: "left",
+                  }}
+                >
+                  {registerSuccess}
+                </div>
+              )}
+
+              {/* REGISTER */}
+
+              <button
+                type="submit"
+                className="btn-primary"
+                disabled={registerLoading}
+              >
+                {registerLoading
+                  ? "Creating Account..."
+                  : "Create Account"}
+              </button>
+
+              {/* LOGIN LINK */}
+
+              <div
+                style={{
+                  marginTop: "4px",
+                  textAlign: "center",
+                  color: "#ffffff",
+                  fontSize: "14px",
+                }}
+              >
+                Already have an account?{" "}
+                <button
+                  type="button"
+                  onClick={handleOpenLogin}
+                  style={{
+                    background: "none",
+                    border: "none",
+                    padding: 0,
+                    color: "#00c98d",
+                    fontWeight: "700",
+                    cursor: "pointer",
+                    fontSize: "14px",
+                  }}
+                >
+                  Login
+                </button>
+              </div>
+
+              {/* BACK */}
+
+              <button
+                type="button"
+                className="btn-secondary"
+                onClick={() => {
+                  setShowRegister(false);
+                  setRegisterError("");
+                  setRegisterSuccess("");
+                }}
+              >
+                Back to Home
+              </button>
+            </form>
+          </section>
+
         ) : currentView === "home" ? (
 
           /* ==================================================
